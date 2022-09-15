@@ -5,6 +5,22 @@ import { prisma } from "@prisma/client";
 
 const request = supertest(app);
 
+test("POST /planets", async () => {
+    const planet = {
+        name: "Mercury",
+        diameter: 123,
+        moons: 12,
+    };
+
+    const response = await request
+        .post("/planets")
+        .send(planet)
+        .expect(201)
+        .expect("Content-type", /application\/json/);
+
+    expect(response.body).toEqual(planet);
+});
+
 test("GET /planets", async () => {
     const planets = [
         {
