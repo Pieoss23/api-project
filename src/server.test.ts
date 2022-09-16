@@ -1,61 +1,76 @@
 import supertest from "supertest";
 import { prismaMock } from "./lib/prisma/client.mock";
+
 import app from "./app";
-import { prisma } from "@prisma/client";
 
 const request = supertest(app);
-// use describe block for test some together
-describe("POST /planets", () => {
-    test("Valid Request", async () => {
+
+describe("GET /planets", () => {
+    test("Valid request", async () => {
         const planets = [
             {
                 id: 1,
                 name: "Mercury",
-                description: null,
-                diameter: 123,
+                description: "null",
+                diameter: 1234,
                 moons: 12,
-                createdAt: "2022-09-14T07:36:29.104Z",
-                updateAt: "2022-09-14T07:35:27.129Z",
+                createdAt: "2022-09-13T11:10:20.422Z",
+                updatedAt: "2022-09-13T11:09:48.636Z",
             },
             {
                 id: 2,
                 name: "Venus",
-                description: null,
+                description: "null",
                 diameter: 5678,
-                moons: 2,
-                createdAt: "2022-09-14T07:36:29.105Z",
-                updateAt: "2022-09-14T07:35:59.028Z",
+                moons: 0,
+                createdAt: "2022-09-13T11:11:44.273Z",
+                updatedAt: "2022-09-13T11:11:16.895Z",
             },
         ];
-        // @ts-ignore
+
+        //@ts-ignore
         prismaMock.planet.findMany.mockResolvedValue(planets);
+
         const response = await request
             .get("/planets")
             .expect(200)
-            .expect("Content-type", /application\/json/);
+            .expect("Content-Type", /application\/json/);
 
         expect(response.body).toEqual(planets);
     });
+});
 
-    test("valid request", async () => {
+describe("POST /planets", () => {
+    test("Valid request", async () => {
         const planet = {
+            id: 3,
             name: "Mercury",
-            diameter: 123,
+            description: null,
+            diameter: 1234,
             moons: 12,
+            createdAt: "2022-09-16T08:40:10.894Z",
+            updatedAt: "2022-09-16T08:40:10.904Z",
         };
+
+        //@ts-ignore
+        prismaMock.planet.create.mockResolvedValue(planet);
 
         const response = await request
             .post("/planets")
-            .send(planet)
+            .send({
+                name: "Mercury",
+                diameter: 1234,
+                moons: 12,
+            })
             .expect(201)
-            .expect("Content-type", /application\/json/);
+            .expect("Content-Type", /application\/json/);
 
         expect(response.body).toEqual(planet);
     });
 
-    test("invalid request", async () => {
+    test("Invalid request", async () => {
         const planet = {
-            diameter: 123,
+            diameter: 1234,
             moons: 12,
         };
 
@@ -63,7 +78,7 @@ describe("POST /planets", () => {
             .post("/planets")
             .send(planet)
             .expect(422)
-            .expect("Content-type", /application\/json/);
+            .expect("Content-Type", /application\/json/);
 
         expect(response.body).toEqual({
             errors: {
