@@ -2,10 +2,34 @@ import supertest from "supertest";
 import { prismaMock } from "./lib/prisma/client.mock";
 
 import app from "./app";
+import { prisma } from "@prisma/client";
 
 const request = supertest(app);
 
 describe("GET /planets", () => {
+    test("Valid request", async () => {
+        const planets = {
+            id: 1,
+            name: "Mercury",
+            description: "null",
+            diameter: 1234,
+            moons: 12,
+            createdAt: "2022-09-13T11:10:20.422Z",
+            updatedAt: "2022-09-13T11:09:48.636Z",
+        };
+        //@ts-ignore
+        prismaMock.planet.findMany.mockResolvedValue(planets);
+
+        const response = await request
+            .get("/planets")
+            .expect(200)
+            .expect("Content-Type", /application\/json/);
+
+        expect(response.body).toEqual(planets);
+    });
+});
+
+describe("GET /planets/:id", () => {
     test("Valid request", async () => {
         const planets = [
             {
@@ -29,14 +53,31 @@ describe("GET /planets", () => {
         ];
 
         //@ts-ignore
-        prismaMock.planet.findMany.mockResolvedValue(planets);
+        prismaMock.planet.findUnique.mockResolvedValue(planets);
 
         const response = await request
-            .get("/planets")
+            .get("/planets/1")
             .expect(200)
             .expect("Content-Type", /application\/json/);
 
         expect(response.body).toEqual(planets);
+    });
+
+    test("Planet does not exist", async () => {
+        prismaMock.planet.findUnique.mockResolvedValue(null);
+        const response = await request
+            .get("/planets/23")
+            .expect(404)
+            .expect("Content-Type", /text\/html/);
+        expect(response.text).toContain("Cannot GET /planets");
+    });
+
+    test("Invalid planet ID not exist", async () => {
+        const response = await request
+            .get("/planets/asdf")
+            .expect(404)
+            .expect("Content-Type", /text\/html/);
+        expect(response.text).toContain("Cannot GET /planets/asdf");
     });
 });
 
