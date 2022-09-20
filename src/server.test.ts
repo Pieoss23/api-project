@@ -6,6 +6,8 @@ import { prisma } from "@prisma/client";
 
 const request = supertest(app);
 
+// GET REQ TEST
+
 describe("GET /planets", () => {
     test("Valid request", async () => {
         const planets = {
@@ -81,6 +83,8 @@ describe("GET /planets/:id", () => {
     });
 });
 
+// POST REQ TEST
+
 describe("POST /planets", () => {
     test("Valid request", async () => {
         const planet = {
@@ -128,6 +132,8 @@ describe("POST /planets", () => {
         });
     });
 });
+
+// PUT REQ TEST
 
 describe("PUT /planets/:id", () => {
     test("Valid request", async () => {
@@ -208,5 +214,36 @@ describe("PUT /planets/:id", () => {
             .expect("Content-Type", /text\/html/);
 
         expect(response.text).toContain("Cannot PUT /planets/asdf");
+    });
+});
+
+// DELETE REQ TEST
+
+describe("DELETE /planets/:id", () => {
+    test("Valid request", async () => {
+        const response = await request.delete("/planets/1").expect(204);
+
+        expect(response.text).toEqual("");
+    });
+
+    test("Planet does not exist", async () => {
+        //@ts-ignore
+        prismaMock.planet.delete.mockRejectedValue(new Error("Error"));
+
+        const response = await request
+            .delete("/planets/23")
+            .expect(404)
+            .expect("Content-Type", /text\/html/);
+
+        expect(response.text).toContain("Cannot DELETE /planets/23");
+    });
+
+    test("Invalid planet ID", async () => {
+        const response = await request
+            .delete("/planets/asdf")
+            .expect(404)
+            .expect("Content-Type", /text\/html/);
+
+        expect(response.text).toContain("Cannot DELETE /planets/asdf");
     });
 });
