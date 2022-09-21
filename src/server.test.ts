@@ -3,6 +3,8 @@ import { prismaMock } from "./lib/prisma/client.mock";
 
 import app from "./app";
 import { prisma } from "@prisma/client";
+import exp from "constants";
+import { response } from "express";
 
 const request = supertest(app);
 
@@ -251,5 +253,23 @@ describe("DELETE /planets/:id", () => {
             .expect("Content-Type", /text\/html/);
 
         expect(response.text).toContain("Cannot DELETE /planets/asdf");
+    });
+});
+
+describe("POST /planets/:id/photo", () => {
+    test("invalid planet ID", async () => {
+        const response = await request
+            .post("/planets/asdf/photo")
+            .expect(404)
+            .expect("Content-Type", /text\/html/);
+        expect(response.text).toContain("Cannot POST /planets/asdf/photo");
+    });
+    test("Invalid request with no file upload", async () => {
+        const response = await request
+            .post("/planets/23/photo")
+            .expect(400)
+            .expect("Content-Type", /text\/html/);
+
+        expect(response.text).toContain("No photo file uploaded");
     });
 });
