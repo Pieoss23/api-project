@@ -3,8 +3,6 @@ import { prismaMock } from "./lib/prisma/client.mock";
 
 import app from "./app";
 import { prisma } from "@prisma/client";
-import exp from "constants";
-import { response } from "express";
 
 const request = supertest(app);
 
@@ -255,8 +253,22 @@ describe("DELETE /planets/:id", () => {
         expect(response.text).toContain("Cannot DELETE /planets/asdf");
     });
 });
+/**
+ * these tests depend on: src/lib/middleware/multer.mock.ts
+ * it uses multer.memoryStorage, so no files are writte to disk.
+ * it's not saves in upload multipart/form-dat
+
+ */
 
 describe("POST /planets/:id/photo", () => {
+    test("Valid request with PNG file upload", async () => {
+        await request
+            .post("/planets/23/photo")
+            .attach("photo", "text-fixtures/photos/file.png")
+            .expect(201)
+            .expect("Access-Control-Allow-Origin", "http://localhost:8080");
+    });
+
     test("invalid planet ID", async () => {
         const response = await request
             .post("/planets/asdf/photo")

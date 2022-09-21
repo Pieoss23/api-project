@@ -10,7 +10,7 @@ import {
     PlanetData,
 } from "./lib/validation";
 
-import { initMulterMiddleware } from "./lib/middleware/muter";
+import { initMulterMiddleware } from "./lib/middleware/multer";
 
 const upload = initMulterMiddleware();
 
@@ -92,6 +92,7 @@ app.post(
     upload.single("photo"),
     async (request, response, next) => {
         console.log("request.file", request.file);
+        //error handling for missing photo
         if (!request.file) {
             response.status(400);
             return next("No photo file uploaded");
@@ -100,6 +101,8 @@ app.post(
         response.status(201).json({ photoFilename });
     }
 );
+
+
 
 app.use(validationErrorMiddleware);
 
