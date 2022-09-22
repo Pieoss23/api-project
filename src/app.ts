@@ -87,6 +87,7 @@ app.delete("/planets/:id(\\d+)", async (request, response, next) => {
         next(`Cannot DELETE /planets/${planetId}`);
     }
 });
+// these meth for save photos on disk, hdisk
 app.post(
     "/planets/:id(\\d+)/photo",
     upload.single("photo"),
