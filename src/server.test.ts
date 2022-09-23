@@ -3,6 +3,7 @@ import { prismaMock } from "./lib/prisma/client.mock";
 
 import app from "./app";
 import { prisma } from "@prisma/client";
+import { response } from "express";
 
 const request = supertest(app);
 
@@ -264,20 +265,47 @@ describe("POST /planets/:id/photo", () => {
     test("Valid request with PNG file upload", async () => {
         await request
             .post("/planets/23/photo")
-            .attach("photo", "text-fixtures/photos/file.png")
+            .attach("photo", "test-fixtures/photos/file.png")
             .expect(201)
             .expect("Access-Control-Allow-Origin", "http://localhost:8080");
+    });
+
+    test("Valid request with JPG file upload", async () => {
+        await request
+            .post("/planets/23/photo")
+            .attach("photo", "test-fixtures/photos/file.jpg")
+            .expect(201)
+            .expect("Access-Control-Allow-Origin", "http://localhost:8080");
+    });
+
+    test("Invalid request with text file upload", async () => {
+        const response = await request
+            .post("/planets/23/photo")
+            .attach("photo", "test-fixtures/file.txt")
+            .expect(500)
+            .expect("Content-Type", /text\/html/);
+
+        expect(response.text).toContain(
+            "Error: the uploaded file must be a JPG or a PNG image."
+        );
     });
 
     test("Planet does not exist", async () => {
         //@ts-ignore
         prismaMock.planet.update.mockRejectedValue(new Error("Error"));
+
         const response = await request
-            .post("/planets/23/photo")
-            .attach("photo", "test-fixtures/photos/file.png")
+            .put("/planets/23")
+            .send({
+                name: "Mercury",
+                description: "Lovely planet",
+                diameter: 1234,
+                moons: 12,
+            })
             .expect(404)
             .expect("Content-Type", /text\/html/);
-        expect(response.text).toContain("Cannot POST /planets/23/photo");
+
+        expect(response.text).toContain("Cannot PUT /planets/23");
     });
 
     test("invalid planet ID", async () => {

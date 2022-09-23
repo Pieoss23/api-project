@@ -4,6 +4,6 @@
         "outDir": "./dist",
         "sourceMap": true
     },
-    "include": ["./src/**/*.ts", "src/server.test.js", "src/server.test.js"],
-    "exclude": ["./src/**/*.test.ts"]
+    "include": ["./src//*.ts"],
+    "exclude": ["./src//*.test.ts"]
 }

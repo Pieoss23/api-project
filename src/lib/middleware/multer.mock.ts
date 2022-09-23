@@ -4,7 +4,7 @@ jest.mock("./multer", () => {
     return {
         __esModule: true,
         ...originalModule,
-        initMulterMiddleware : () => {
+        initMulterMiddleware: () => {
             return multer({
                 storage: multer.memoryStorage(),
                 ...originalModule.multerOptions,
