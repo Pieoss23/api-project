@@ -87,7 +87,7 @@ app.delete("/planets/:id(\\d+)", async (request, response, next) => {
         next(`Cannot DELETE /planets/${planetId}`);
     }
 });
-// these meth for save photos on disk, hdisk
+// these method for save photos on disk, hdisk
 app.post(
     "/planets/:id(\\d+)/photo",
     upload.single("photo"),
@@ -96,15 +96,26 @@ app.post(
         //error handling for missing photo
         if (!request.file) {
             response.status(400);
-            return next("No photo file uploaded");
+            return next("No photo file uploaded.");
         }
+        const planetId = Number(request.params.id);
         const photoFilename = request.file.filename;
-        response.status(201).json({ photoFilename });
+
+        try {
+            await prisma.planet.update({
+                where: { id: planetId },
+                data: { photoFilename },
+            });
+            response.status(201).json({ photoFilename });
+        } catch (error) {
+            response.status(404);
+            next(`Cannot POST /planets/${planetId}/photo`);
+        }
     }
 );
 
-
-
+// middleware to see file on browser
+app.use("/planets/photos", express.static("uploads"));
 app.use(validationErrorMiddleware);
 
 export default app;

@@ -3,9 +3,10 @@ import mime from "mime";
 import { randomUUID } from "crypto";
 
 export const generatePhotoFilename = (mimeType: string) => {
-    const randomFilename = `${randomUUID()} - ${Date.now}`;
+    const randomFilename = `${randomUUID()}-${Date.now()}`;
     const fileExtension = mime.getExtension(mimeType);
     const filename = `${randomFilename}.${fileExtension}`;
+
     return filename;
 };
 
