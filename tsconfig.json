@@ -4,6 +4,6 @@
         "outDir": "./dist",
         "sourceMap": true
     },
-    "include": ["./src//*.ts"],
+    "include": ["./src//*.ts", "src/routes/planets.ts", "src/routes/planets.test.ts"],
     "exclude": ["./src//*.test.ts"]
 }
