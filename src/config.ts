@@ -1,8 +1,11 @@
 const missingSetting = "Warning: No value set for this environment variable";
 
 const config = {
-    PORT: process.env.PORT || missingSetting,
-    SESSION_SECRET: process.env.SESSION_SECRET || missingSetting,
+    "PORT": process.env.PORT || missingSetting,
+    "SESSION_SECRET": process.env.SESSION_SECRET || missingSetting,
+    "GITHUB_CLIENT_ID": process.env.GITHUB_CLIENT_ID || missingSetting,
+    "GITHUB_CLIENT_SECRET": process.env.GITHUB_CLIENT_SECRET || missingSetting,
+    "GITHUB_CLIENT_URL": process.env.GITHUB_CLIENT_URL || missingSetting,
 };
 
 export default config;
